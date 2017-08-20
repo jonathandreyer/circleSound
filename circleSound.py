@@ -18,7 +18,6 @@ from driver import A4988Driver
 # globals
 global note_max, note_min, dist_max, dist_min, bins, instrument
 global motor_thread
-#motor_thread = threading.Thread()
 note_max = 117
 note_min = 0
 dist_max = 140  # cm
@@ -68,19 +67,8 @@ def init_motor():
     driv = A4988Driver()
     driv.enable()
     driv.set_speed(1000)
-    #mh = Adafruit_MotorHAT(addr=0x60)
-    #motor = mh.getStepper(200, 1)
-    #set_speed(mot, 60)  # rpm
 
     return driv
-
-
-#def set_speed(driver, speed):
-#    driver.setSpeed(speed)
-
-
-#def stepper_worker(driver, numsteps, direction, style):
-#    driver.step(numsteps, direction, style)
 
 
 def init_GPIO():
@@ -189,10 +177,6 @@ if __name__ == "__main__":
 
     # start motor
     driv = init_motor()
-    #if not motor_thread.isAlive():
-    #    motor_thread = threading.Thread(target=stepper_worker,
-    #                                    args=(motor, 100, Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.DOUBLE))
-    #    motor_thread.start()
 
     try:
         # IDLE LOOP 
