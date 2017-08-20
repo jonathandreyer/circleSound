@@ -61,6 +61,9 @@ class A4988Driver:
 
     def _exit(self):
         self.logger.debug('exit')
+
+        GPIO.setmode(GPIO.BCM)
+
         self.disable()
         self.set_speed(0.1)
 

@@ -11,9 +11,7 @@
 import RPi.GPIO as GPIO
 import fluidsynth
 import time
-#import atexit
 from driver import A4988Driver
-#import threading
 
 # globals
 global note_max, note_min, dist_max, dist_min, bins, instrument
@@ -30,7 +28,7 @@ ECHO = 23
 
 
 def init_config():
-    ''' Reads the text config file '''
+    """ Reads the text config file """
     f = open('config.txt', 'r')
     conf = {}
     for line in f:
@@ -63,7 +61,7 @@ def init_config():
 
 
 def init_motor():
-    '''' Inits the stepper'''
+    """ Inits the stepper """
     driv = A4988Driver()
     driv.enable()
     driv.set_speed(1000)
@@ -72,7 +70,7 @@ def init_motor():
 
 
 def init_GPIO():
-    ''' Sets measure GPIOS and others if needed'''
+    """ Sets measure GPIOS and others if needed"""
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(TRIG, GPIO.OUT)
     GPIO.setup(ECHO, GPIO.IN)
@@ -83,13 +81,13 @@ def cleanup():
 
 
 def setup_probe():
-    ''' Setup ultrasound probe'''
+    """ Setup ultrasound probe"""
     GPIO.output(TRIG, False)
     time.sleep(2)
 
 
 def measure_distance():
-    ''' Returns measured distance in cm '''
+    """ Returns measured distance in cm """
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
@@ -114,7 +112,7 @@ def measure_distance():
 
 
 def load_fs(instrument):
-    ''' starts fluidsynth server and load sound font'''
+    """ starts fluidsynth server and load sound font"""
     fs = fluidsynth.Synth()
     fs.start(driver='alsa')
     sfid = fs.sfload('/usr/share/sounds/sf2/FluidR3_GM.sf2')
@@ -124,23 +122,23 @@ def load_fs(instrument):
 
 
 def change_instrument(sfid, instrument):
-    ''' Sets another instrument '''
+    """ Sets another instrument """
     fs.program_select(0, sfid, 0, instrument)
     print 'Instrument is number : ', instrument
 
 
 def set_sound_settings(fs, channel=0):
-    ''' Sets actual sounds settings, such as vibrato, pan, sustain, chorus '''
+    """ Sets actual sounds settings, such as vibrato, pan, sustain, chorus """
     fs.cc(channel, 1, 1)
     fs.cc(channel, 93, 1)
     fs.cc(channel, 64, 1)
 
 
 def convert_dist_to_note(distance):
-    ''' Converts the measurement into a note
+    """ Converts the measurement into a note
 
     It could be useful to calibrate, or set a scale min/max = C to F or so
-    '''
+    """
     if (distance > dist_min and distance < dist_max):
         # linear interpolation
         # note = distance * (note_max-note_min)/(dist_max-dist_min) + note_min
