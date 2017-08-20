@@ -11,9 +11,14 @@
 import RPi.GPIO as GPIO
 import fluidsynth
 import time
+#import atexit
+from driver import A4988Driver
+#import threading
 
 # globals
 global note_max, note_min, dist_max, dist_min, bins, instrument
+global motor_thread
+#motor_thread = threading.Thread()
 note_max = 117
 note_min = 0
 dist_max = 140  # cm
@@ -56,6 +61,26 @@ def init_config():
             bins.append(note_bin)
             count += 1
     print 'final count : ', count
+
+
+def init_motor():
+    '''' Inits the stepper'''
+    driv = A4988Driver()
+    driv.enable()
+    driv.set_speed(1000)
+    #mh = Adafruit_MotorHAT(addr=0x60)
+    #motor = mh.getStepper(200, 1)
+    #set_speed(mot, 60)  # rpm
+
+    return driv
+
+
+#def set_speed(driver, speed):
+#    driver.setSpeed(speed)
+
+
+#def stepper_worker(driver, numsteps, direction, style):
+#    driver.step(numsteps, direction, style)
 
 
 def init_GPIO():
@@ -151,6 +176,7 @@ if __name__ == "__main__":
     init_config()
     note = 0
     global instrument
+    global motor_thread
     counter = 0
     d = 0  # first measure
 
@@ -160,6 +186,13 @@ if __name__ == "__main__":
     # init GPIO and ultraprobe
     init_GPIO()
     setup_probe()
+
+    # start motor
+    driv = init_motor()
+    #if not motor_thread.isAlive():
+    #    motor_thread = threading.Thread(target=stepper_worker,
+    #                                    args=(motor, 100, Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.DOUBLE))
+    #    motor_thread.start()
 
     try:
         # IDLE LOOP 
@@ -182,4 +215,5 @@ if __name__ == "__main__":
             time.sleep(0.5)
     except KeyboardInterrupt:  # triggered by CTRL+C
         cleanup()
+        driv.disable()
         pass
